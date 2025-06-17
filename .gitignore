@@ -1,0 +1,7 @@
+# Other gitignore rules...
+node_modules
+
+
+# Local environment variables
+.env.local
+.env.*.local
