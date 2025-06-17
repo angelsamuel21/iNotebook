@@ -23,8 +23,8 @@ const UserProfile = (props) => {
   const [loadingPassword, setLoadingPassword] = useState(false);
 
   const navigate = useNavigate();
-  const apiBaseUrl =
-    process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+  // Use environment variable for API base URL. It MUST be set in the deployment environment.
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   const fetchProfileDetails = useCallback(async () => {
     const token = localStorage.getItem("token");
@@ -46,6 +46,12 @@ const UserProfile = (props) => {
 
     // Always attempt to fetch fresh data from the backend.
     try {
+      if (!apiBaseUrl) {
+        // This case should ideally be caught before, or App.js should handle global config errors.
+        showAlert("API URL not configured. Cannot fetch profile.", "danger");
+        return;
+      }
+
       const response = await fetch(`${apiBaseUrl}/api/auth/getuser`, {
         method: "GET",
         headers: { "auth-token": token },
@@ -88,6 +94,12 @@ const UserProfile = (props) => {
     const token = localStorage.getItem("token");
 
     try {
+      if (!apiBaseUrl) {
+        setNameMessage({ text: "API URL not configured.", type: "danger" });
+        setLoadingName(false);
+        return;
+      }
+
       const response = await fetch(`${apiBaseUrl}/api/auth/updateprofile`, {
         method: "PUT",
         headers: {
@@ -144,6 +156,12 @@ const UserProfile = (props) => {
     const token = localStorage.getItem("token");
 
     try {
+      if (!apiBaseUrl) {
+        setPasswordMessage({ text: "API URL not configured.", type: "danger" });
+        setLoadingPassword(false);
+        return;
+      }
+
       const response = await fetch(`${apiBaseUrl}/api/auth/changepassword`, {
         method: "POST",
         headers: {

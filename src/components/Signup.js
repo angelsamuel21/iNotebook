@@ -29,9 +29,9 @@ const Signup = (props) => {
       // API Call to your backend signup endpoint
       // Ensure your backend has a route like /api/auth/createuser
       // The "TypeError: Failed to fetch" would originate from this fetch call if connection fails
-      // Use environment variable for API base URL
-      const apiBaseUrl =
-        process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+      // Use environment variable for API base URL. It MUST be set in the deployment environment.
+      const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+
       const response = await fetch(`${apiBaseUrl}/api/auth/createuser`, {
         method: "POST",
         headers: {
@@ -39,6 +39,11 @@ const Signup = (props) => {
         },
         body: JSON.stringify({ name, email, password }),
       });
+
+      if (!apiBaseUrl) {
+        showAlert("API URL not configured. Please check deployment settings.", "danger");
+        return;
+      }
 
       if (!response.ok) {
         const errorData = await response

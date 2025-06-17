@@ -4,7 +4,8 @@ import { Link, useNavigate } from "react-router-dom"; // Import Link
 
 const Login = (props) => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+  // Use environment variable for API base URL. It MUST be set in the deployment environment.
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   const handleSubmit = async (e) => {
@@ -32,7 +33,12 @@ const Login = (props) => {
         props.showAlert(json.error || "Invalid Credentials", "danger");
       }
     } catch (error) {
-      props.showAlert("An error occurred during login.", "danger");
+      // More specific error if apiBaseUrl was the issue (e.g., if it resolved to "undefined/api/auth/login")
+      if (!apiBaseUrl) {
+        props.showAlert("API URL not configured. Please check deployment settings.", "danger");
+      } else {
+        props.showAlert("An error occurred during login. Could not connect to server.", "danger");
+      }
       console.error("Login error:", error);
     }
   };

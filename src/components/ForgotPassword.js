@@ -10,7 +10,8 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState('enterEmail'); // 'enterEmail', 'enterOtp', 'enterNewPassword'
 
-  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+  // Use environment variable for API base URL. It MUST be set in the deployment environment.
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -18,6 +19,12 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
+      if (!apiBaseUrl) {
+        setMessage({ text: 'API URL not configured. Please check deployment settings.', type: 'danger' });
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch(`${apiBaseUrl}/api/auth/send-otp`, {
         method: 'POST',
         headers: {
@@ -69,6 +76,12 @@ const ForgotPassword = () => {
 
     // Step 1: Verify OTP
     try {
+      if (!apiBaseUrl) {
+        setMessage({ text: 'API URL not configured. Please check deployment settings.', type: 'danger' });
+        setLoading(false);
+        return;
+      }
+
       const verifyOtpRes = await fetch(`${apiBaseUrl}/api/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
