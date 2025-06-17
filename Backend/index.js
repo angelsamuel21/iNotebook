@@ -28,21 +28,22 @@ async function startServer() {
   app.use(express.json()); // To parse JSON request bodies
 
   // Routes
+  // Consider organizing auth-related routes under a single main router for /api/auth
+  // if there's overlap or for better structure.
   app.use("/api/auth", require("./routes/auth"));
   app.use("/api/auth", require("./routes/getUser"));
   app.use("/api/auth", require("./routes/resetPassword"));   // This line requires resetPassword.js to export a router
   app.use("/api/notes", require("./routes/notes"));
   app.use("/api/auth", require("./routes/verifyOtp"));       // This line requires verifyOtp.js to export a router
 
-
   // Test route
   app.get("/", (req, res) => {
-    res.send("Welcome to the iNotebook Backend API!");
+    res.send("Welcome to the iNotebook Backend API! Ready to take notes.");
   });
 
   // Start the server
   app.listen(port, () => {
-    console.log(`✅ Server listening at http://localhost:${port}`);
+    console.log(`✅ Server listening on port ${port}`);
   });
 }
 

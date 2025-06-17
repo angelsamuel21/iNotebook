@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom"; // Import Link
 const Login = (props) => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   let navigate = useNavigate();
-  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

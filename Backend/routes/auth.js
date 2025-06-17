@@ -120,7 +120,10 @@ router.post(
     }
     const { email, password } = req.body;
     console.log(`[login] Attempting login for email: ${email}`);
-    console.log(`[login] Plaintext password received: "${password}"`); // Log plaintext
+    // Avoid logging plaintext passwords in production.
+    if (process.env.NODE_ENV === "development") {
+      console.log(`[login] DEV_ONLY: Plaintext password received: "${password}"`);
+    }
 
     try {
       const user = await User.findOne({ email });
