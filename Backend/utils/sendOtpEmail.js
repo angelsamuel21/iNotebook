@@ -24,16 +24,16 @@ const sendOtpEmail = async (toEmail, otp) => {
   });
 
  const mailOptions = {
-  from: `"iNotebook Support" <${process.env.EMAIL_USER}>`,
+  from: `"iNotebookPro Support" <${process.env.EMAIL_USER}>`,
   to: toEmail,
-  subject: 'Your OTP Code for iNotebook Password Reset',
+  subject: 'Your OTP Code for iNotebookPro Password Reset',
 
   html: `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; padding: 20px; color: #333;">
       <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
-        <h2 style="color: #4A90E2;">iNotebook Password Reset</h2>
+        <h2 style="color: #4A90E2;">iNotebookPro Password Reset</h2>
         <p>Hi there,</p>
-        <p>We received a request to reset the password for your <strong>iNotebook</strong> account.</p>
+        <p>We received a request to reset the password for your <strong>iNotebookPro</strong> account.</p>
         <p>Please use the OTP below to proceed with resetting your password:</p>
         <div style="text-align: center; margin: 30px 0;">
           <span style="font-size: 32px; font-weight: bold; color: #333; background-color: #f0f0f0; padding: 10px 20px; border-radius: 8px; display: inline-block;">
@@ -45,7 +45,7 @@ const sendOtpEmail = async (toEmail, otp) => {
         <hr style="margin: 30px 0;">
         <p style="font-size: 14px; color: #777;">
           Regards,<br>
-          <strong>The iNotebook Team</strong><br>
+          <strong>The iNotebookPro Team</strong><br>
           <em>This is an automated message, please do not reply.</em>
         </p>
       </div>
