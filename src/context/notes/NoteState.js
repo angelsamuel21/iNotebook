@@ -2,7 +2,7 @@ import NoteContext from "./noteContext";
 import { useState, useCallback } from "react"; // Import useCallback
 
 const NoteState = (props) => {
-  const host = "http://localhost:5000"
+  const host = process.env.REACT_APP_API_BASE_URL; // Ensure this is set in your .env file
   const notesInitial = []
   const [notes, setNotes] = useState(notesInitial)
 
