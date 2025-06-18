@@ -13,6 +13,19 @@ const ForgotPassword = () => {
   // Use environment variable for API base URL. It MUST be set in the deployment environment.
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
+  // Helper function to parse error responses
+  async function parseErrorResponse(response) {
+    const responseText = await response.text();
+    try {
+      const errorData = JSON.parse(responseText);
+      return errorData.error || errorData.message || `Server responded with status: ${response.status}`;
+    } catch (jsonError) {
+      console.error("Error response was not JSON. Raw response:", responseText);
+      // Return a snippet of the non-JSON response for better debugging
+      return `Server error: ${response.status} - ${response.statusText}. Response: ${responseText.substring(0, 150)}...`;
+    }
+  }
+
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setMessage(null); // Clear previous message object
@@ -21,7 +34,6 @@ const ForgotPassword = () => {
     try {
       if (!apiBaseUrl) {
         setMessage({ text: 'API URL not configured. Please check deployment settings.', type: 'danger' });
-        setLoading(false);
         return;
       }
 
@@ -38,25 +50,15 @@ const ForgotPassword = () => {
         setMessage({ text: data.message || 'OTP has been sent to your email.', type: 'success' });
         setStage('enterOtp'); // Move to OTP entry stage
       } else {
-        // Attempt to parse error response as JSON, but handle cases where it might not be
-        const responseText = await res.text(); // Read the body as text ONCE
-        let errorMessage;
-        try {
-          const errorData = JSON.parse(responseText); // Try to parse the text as JSON
-          errorMessage = errorData.error || errorData.message || `Server responded with status: ${res.status}`;
-        } catch (jsonError) {
-          // If parsing as JSON fails, it means the response was not valid JSON (e.g., HTML error page)
-          // Use the raw responseText or a more generic error message.
-          errorMessage = `Server error: ${res.status} - ${res.statusText}. Response: ${responseText.substring(0, 100)}...`; // Show a snippet
-          console.error("Response was not JSON. Raw response:", responseText);
-        }
+        const errorMessage = await parseErrorResponse(res);
         setMessage({ text: errorMessage, type: 'danger' });
       }
     } catch (err) {
       console.error('Send OTP request failed:', err);
       setMessage({ text: 'An error occurred. Please check your connection and try again.', type: 'danger' });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleVerifyOtpAndSetPassword = async (e) => {
@@ -78,7 +80,6 @@ const ForgotPassword = () => {
     try {
       if (!apiBaseUrl) {
         setMessage({ text: 'API URL not configured. Please check deployment settings.', type: 'danger' });
-        setLoading(false);
         return;
       }
 
@@ -89,24 +90,14 @@ const ForgotPassword = () => {
       });
 
       if (!verifyOtpRes.ok) {
-        const responseText = await verifyOtpRes.text();
-        let errorMessage;
-        try {
-          const errorData = JSON.parse(responseText);
-          errorMessage = errorData.message || `OTP Verification failed: ${verifyOtpRes.status}`;
-        } catch (jsonError) {
-          errorMessage = `Server error during OTP verification: ${verifyOtpRes.status} - ${verifyOtpRes.statusText}. Response: ${responseText.substring(0,100)}...`;
-          console.error("OTP Verification response was not JSON:", responseText);
-        }
+        const errorMessage = await parseErrorResponse(verifyOtpRes);
         setMessage({ text: errorMessage, type: 'danger' });
-        setLoading(false);
         return;
       }
 
       const verifyOtpData = await verifyOtpRes.json();
-      if (!verifyOtpData.success) {
+      if (verifyOtpData && !verifyOtpData.success) { // Check if verifyOtpData itself is defined
         setMessage({ text: verifyOtpData.message || 'OTP verification failed.', type: 'danger' });
-        setLoading(false);
         return;
       }
       
@@ -120,29 +111,20 @@ const ForgotPassword = () => {
       });
 
       if (!resetPasswordRes.ok) {
-        const responseText = await resetPasswordRes.text();
-        let errorMessage;
-        try {
-            const errorData = JSON.parse(responseText);
-            errorMessage = errorData.message || `Password reset failed: ${resetPasswordRes.status}`;
-        } catch (jsonError) {
-            errorMessage = `Server error during password reset: ${resetPasswordRes.status} - ${resetPasswordRes.statusText}. Response: ${responseText.substring(0,100)}...`;
-            console.error("Password reset response was not JSON:", responseText);
-        }
+        const errorMessage = await parseErrorResponse(resetPasswordRes);
         setMessage({ text: errorMessage, type: 'danger' });
-        setLoading(false);
         return;
       }
 
       const resetPasswordData = await resetPasswordRes.json();
       setMessage({ text: resetPasswordData.message || 'Password has been reset successfully!', type: 'success' });
       setStage('completed'); // Or redirect to login
-
     } catch (err) {
       console.error('OTP verification or Password reset failed:', err);
       setMessage({ text: 'An error occurred during the process. Please try again.', type: 'danger' });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -208,6 +190,7 @@ const ForgotPassword = () => {
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       required minLength={6}
+                      autoComplete="new-password"
                       disabled={loading}
                     />
                   </div>
@@ -221,6 +204,7 @@ const ForgotPassword = () => {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required minLength={6}
+                      autoComplete="new-password"
                       disabled={loading}
                     />
                   </div>
