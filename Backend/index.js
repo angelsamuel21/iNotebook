@@ -23,7 +23,7 @@ async function startServer() {
   // Middleware
   app.use(helmet()); // Use helmet for security headers
   app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN,
   }));
   app.use(express.json()); // To parse JSON request bodies
 
