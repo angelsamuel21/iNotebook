@@ -149,9 +149,9 @@ const UserProfile = (props) => {
   };
 
   return (
-    <div className="container mt-5 mb-3">
+    <div className="container mt-5">
       <div className="row justify-content-center">
-        <div className="col-md-8 col-lg-7">
+        <div className="col-md-8 col-lg-7 my-5">
           <h1 className="mb-4 text-center">User Profile</h1>
 
           <div className="card mb-4 shadow-sm">
