@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 // dotenv.config() is already called in index.js, so it's not needed here.
 
 const sendOtpEmail = async (toEmail, otp) => {
@@ -13,8 +13,8 @@ const sendOtpEmail = async (toEmail, otp) => {
 
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST, // e.g., 'smtp.gmail.com' or your transactional email provider's host
-    port: parseInt(process.env.EMAIL_PORT || '587', 10), // Default to 587 if not specified
-    secure: process.env.EMAIL_SECURE === 'true', // true for 465 (SSL), false for other ports (TLS)
+    port: parseInt(process.env.EMAIL_PORT || "587", 10), // Default to 587 if not specified
+    secure: process.env.EMAIL_SECURE === "true", // true for 465 (SSL), false for other ports (TLS)
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
@@ -23,12 +23,12 @@ const sendOtpEmail = async (toEmail, otp) => {
     // tls: { rejectUnauthorized: false }
   });
 
- const mailOptions = {
-  from: `"iNotebookPro Support" <${process.env.EMAIL_USER}>`,
-  to: toEmail,
-  subject: 'Your OTP Code for iNotebookPro Password Reset',
+  const mailOptions = {
+    from: `"iNotebookPro Support" <${process.env.EMAIL_USER}>`,
+    to: toEmail,
+    subject: "Your OTP Code for iNotebookPro Password Reset",
 
-  html: `
+    html: `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; padding: 20px; color: #333;">
       <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
         <h2 style="color: #4A90E2;">iNotebookPro Password Reset</h2>
@@ -51,7 +51,7 @@ const sendOtpEmail = async (toEmail, otp) => {
       </div>
     </div>
   `,
-};
+  };
 
   try {
     // transporter.verify() can be useful for initial setup checks or diagnostics,
@@ -61,10 +61,12 @@ const sendOtpEmail = async (toEmail, otp) => {
     // console.log("✅ SMTP Transporter Verified:", isVerified);
 
     const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ OTP email successfully sent to ${toEmail}. Message ID: ${info.messageId}`);
+    console.log(
+      `✅ OTP email successfully sent to ${toEmail}. Message ID: ${info.messageId}`
+    );
     return { success: true };
   } catch (error) {
-    console.error('❌ Error sending OTP:', error.message);
+    console.error("❌ Error sending OTP:", error.message);
     return { success: false, error: error.message };
   }
 };

@@ -3,10 +3,10 @@ import React from 'react';
 const About = () => {
   return (
     <section className="about-section" style={{ padding: '2rem' }}>
-      <h1>About iNotebook</h1>
+      <h1>About iNotebookPro</h1>
 
       <p>
-        <strong>iNotebook</strong> is a full-stack web application developed using the <strong>MERN stack</strong> — 
+        <strong>iNotebookPro</strong> is a full-stack web application developed using the <strong>MERN stack</strong> —
         <strong>MongoDB</strong>, <strong>Express.js</strong>, <strong>React.js</strong>, and <strong>Node.js</strong>. 
         It allows users to create, edit, and manage personal notes with secure authentication, offering a seamless and productive note-taking experience.
       </p>
@@ -76,7 +76,7 @@ const About = () => {
       </ul>
 
       <p style={{ marginTop: '2rem' }}>
-        <strong>Thank you for using iNotebook!</strong> — built with ❤️ using the MERN Stack by Angel Samuel.
+        <strong>Thank you for using iNotebookPro!</strong> — built with ❤️ using the MERN Stack by Angel Samuel.
       </p>
     </section>
   );

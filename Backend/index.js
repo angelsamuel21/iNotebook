@@ -30,6 +30,7 @@ async function startServer() {
   // Routes
   // Consider organizing auth-related routes under a single main router for /api/auth
   // if there's overlap or for better structure.
+
   app.use("/api/auth", require("./routes/auth"));
   app.use("/api/auth", require("./routes/getUser"));
   app.use("/api/auth", require("./routes/resetPassword"));   // This line requires resetPassword.js to export a router
