@@ -16,6 +16,7 @@ import ForgotPassword from "./components/ForgotPassword"; // Import the new comp
 import UserProfile from "./components/UserProfile"; // Import UserProfile
 import Footer from "./components/Footer"; // Import the Footer component
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
+import GuestRoute from "./components/GuestRoute"; // Import GuestRoute
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -136,10 +137,12 @@ function App() {
                 exact
                 path="/login"
                 element={
-                  <Login
-                    showAlert={showAlert}
-                    fetchUserDetails={fetchUserDetails}
-                  />
+                  <GuestRoute user={user} loading={loading}>
+                    <Login
+                      showAlert={showAlert}
+                      fetchUserDetails={fetchUserDetails}
+                    />
+                  </GuestRoute>
                 }
               />{" "}
               {/* Pass showAlert and fetchUserDetails */}
@@ -147,10 +150,12 @@ function App() {
                 exact
                 path="/signup"
                 element={
-                  <Signup
-                    showAlert={showAlert}
-                    fetchUserDetails={fetchUserDetails}
-                  />
+                  <GuestRoute user={user} loading={loading}>
+                    <Signup
+                      showAlert={showAlert}
+                      fetchUserDetails={fetchUserDetails}
+                    />
+                  </GuestRoute>
                 }
               />{" "}
               {/* Pass showAlert and fetchUserDetails */}
