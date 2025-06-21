@@ -63,7 +63,7 @@ function App() {
               "Invalid user data received. Please login again.",
               "warning"
             );
-            navigate("/login");
+            // Navigation is now handled by route components based on the user state.
           }
         } else {
           // Invalid token or other server-side error
@@ -74,7 +74,7 @@ function App() {
             "Session expired or invalid. Please login again.",
             "warning"
           );
-          navigate("/login"); // Redirect to login
+          // Navigation is now handled by route components based on the user state.
         }
       } catch (error) {
         console.error("Failed to fetch user details:", error);
@@ -82,7 +82,7 @@ function App() {
         setUser(null);
         console.log("App.js: Fetch user details failed, logging out."); // Debug log
         showAlert("Could not verify session. Please login.", "danger");
-        navigate("/login"); // Redirect to login
+        // Navigation is now handled by route components based on the user state.
       }
     } else {
       setUser(null);
@@ -162,9 +162,12 @@ function App() {
               <Route
                 exact
                 path="/forgot-password"
-                element={<ForgotPassword />}
-              />{" "}
-              {/* Add the route */}
+                element={
+                  <GuestRoute user={user} loading={loading}>
+                    <ForgotPassword />
+                  </GuestRoute>
+                }
+              />
               <Route
                 exact
                 path="/profile"

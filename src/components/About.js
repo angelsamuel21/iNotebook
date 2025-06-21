@@ -1,8 +1,9 @@
 import React from 'react';
+import './About.css';
 
 const About = () => {
   return (
-    <section className="about-section" style={{ padding: '2rem' }}>
+    <section className="about-section container my-4">
       <h1>About iNotebookPro</h1>
 
       <p>
