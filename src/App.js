@@ -15,10 +15,12 @@ import Login from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword"; // Import the new component
 import UserProfile from "./components/UserProfile"; // Import UserProfile
 import Footer from "./components/Footer"; // Import the Footer component
+import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 
 function App() {
   const [alert, setAlert] = useState(null);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state for initial auth check
   const navigate = useNavigate(); // Hook for navigation
 
   const showAlert = useCallback((message, type) => {
@@ -34,6 +36,7 @@ function App() {
   const apiBaseUrl =
     process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
   const fetchUserDetails = useCallback(async () => {
+    // This function is now just for fetching, not controlling loading state.
     const token = localStorage.getItem("token");
     if (token) {
       try {
@@ -86,18 +89,16 @@ function App() {
       // No token, so user is not logged in.
       // Protected routes will handle their own redirection if accessed directly.
     }
-  }, [navigate, showAlert, apiBaseUrl]); // navigate and showAlert are now stable dependencies
+  }, [navigate, showAlert, apiBaseUrl]);
 
   useEffect(() => {
-    // Only attempt to fetch user details if a token exists
-    if (localStorage.getItem("token")) {
-      fetchUserDetails();
-    }
-    // Since fetchUserDetails is now memoized, it can be included in the dependency array
-    // if there are scenarios where App.js itself might need to re-trigger it based on its own state/prop changes.
-    // For an initial load, an empty array is fine, or [fetchUserDetails] if it should re-run if its own deps change.
-    // For this specific effect (initial load check), [] is common.
-  }, [fetchUserDetails]); // Added fetchUserDetails as it's now memoized
+    // On initial app load, perform the authentication check.
+    const authenticateUser = async () => {
+      await fetchUserDetails();
+      setLoading(false); // Set loading to false after the check is complete
+    };
+    authenticateUser();
+  }, [fetchUserDetails]);
 
   const handleUserLogout = () => {
     localStorage.removeItem("token");
@@ -121,7 +122,15 @@ function App() {
             {" "}
             {/* Bootstrap class for grow, and 'main' semantic tag */}
             <Routes>
-              <Route exact path="/" element={<Home showAlert={showAlert} />} />
+              <Route
+                exact
+                path="/"
+                element={
+                  <ProtectedRoute user={user} loading={loading}>
+                    <Home showAlert={showAlert} />
+                  </ProtectedRoute>
+                }
+              />
               <Route exact path="/about" element={<About />} />
               <Route
                 exact
@@ -155,11 +164,13 @@ function App() {
                 exact
                 path="/profile"
                 element={
-                  <UserProfile
-                    showAlert={showAlert}
-                    fetchUserDetails={fetchUserDetails}
-                    user={user}
-                  />
+                  <ProtectedRoute user={user} loading={loading}>
+                    <UserProfile
+                      showAlert={showAlert}
+                      fetchUserDetails={fetchUserDetails}
+                      user={user}
+                    />
+                  </ProtectedRoute>
                 }
               />
             </Routes>

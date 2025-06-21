@@ -10,12 +10,10 @@ const Notes = (props) => {
   const navigate = useNavigate();
   const { notes, getNotes, editNote } = context;
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      getNotes();
-    } else {
-      navigate("/login");
-    }
-  }, [getNotes, navigate]); // Added dependencies
+    // Since this component is now protected by a route,
+    // we can assume a token exists and just fetch the notes.
+    getNotes();
+  }, [getNotes]); // Dependency array ensures this runs when getNotes is available/stable.
   const ref = useRef(null);
   const refClose = useRef(null);
   const [note, setNote] = useState({

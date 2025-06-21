@@ -27,37 +27,15 @@ const UserProfile = (props) => {
 
   // Effect to handle initial load and updates to appUser
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    // If no token or appUser is null, redirect to login
-    if (!token || !appUser) {
-      // Only show alert if there was a token but appUser is null (implies session issue)
-      if (token && !appUser) {
-        showAlert("Session invalid. Please login again.", "warning");
-      } else if (!token) {
-        // If no token at all, just redirect without an extra alert
-        // (App.js should have already handled this or will on next render)
-      }
-      navigate("/login");
-      return;
-    }
-
-    // If appUser is available, set the name for the input field
+    // If appUser is available, set the name for the input field.
     // This ensures the input field is populated with the current user's name
-    // and updates if appUser changes (e.g., after a name update in App.js)
-    setName(appUser.name || "");
-
-    // No need to fetch user details again here, as App.js is the source of truth.
-    // If appUser is null, the above redirect handles it.
-    // If appUser is present, we use it directly.
-    // The appFetchUserDetails prop is for triggering a refresh of App.js's state
-    // after a successful update from this component.
-  }, [appUser, navigate, showAlert]); // Depend on appUser to re-run when it changes
-
-  // If appUser is null (and we haven't redirected yet), show loading or null
-  if (!appUser) {
-    return <div className="container mt-5 text-center">Loading profile...</div>;
-  }
+    // and updates if appUser changes (e.g., after a name update in App.js).
+    if (appUser) {
+      setName(appUser.name || "");
+    }
+    // The ProtectedRoute now handles redirection, so we don't need to do it here.
+    // This effect's only job is to sync the 'name' state with the 'appUser' prop.
+  }, [appUser]); // Only depends on appUser
 
   const handleNameUpdate = async (e) => {
     e.preventDefault();
