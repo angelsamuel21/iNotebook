@@ -7,7 +7,7 @@ const About = () => {
 
       <p>
         <strong>iNotebookPro</strong> is a full-stack web application developed using the <strong>MERN stack</strong> —
-        <strong>MongoDB</strong>, <strong>Express.js</strong>, <strong>React.js</strong>, and <strong>Node.js</strong>. 
+        <strong>MongoDB</strong>, <strong>Express.js</strong>, <strong>React.js</strong>, and <strong>Node.js</strong>.
         It allows users to create, edit, and manage personal notes with secure authentication, offering a seamless and productive note-taking experience.
       </p>
 
