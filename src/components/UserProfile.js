@@ -6,8 +6,7 @@ const UserProfile = (props) => {
     showAlert,
     fetchUserDetails: appFetchUserDetails,
     user: appUser,
-  } = props;
-  const [userData, setUserData] = useState(null);
+  } = props; // appUser is the user object from App.js
   const [name, setName] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -26,66 +25,39 @@ const UserProfile = (props) => {
   // Use environment variable for API base URL. It MUST be set in the deployment environment.
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
-  const fetchProfileDetails = useCallback(async () => {
+  // Effect to handle initial load and updates to appUser
+  useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      // If appUser is null, App.js likely handled logout/session expiry.
-      // Only show alert if not an immediate post-logout/session expiry scenario.
-      if (appUser !== null) {
-        showAlert("Please login to view your profile.", "warning");
+
+    // If no token or appUser is null, redirect to login
+    if (!token || !appUser) {
+      // Only show alert if there was a token but appUser is null (implies session issue)
+      if (token && !appUser) {
+        showAlert("Session invalid. Please login again.", "warning");
+      } else if (!token) {
+        // If no token at all, just redirect without an extra alert
+        // (App.js should have already handled this or will on next render)
       }
       navigate("/login");
       return;
     }
 
-    // Optimistically set name from appUser for faster input field display,
-    // but userData will be set by the fresh API call.
-    if (appUser) {
-      setName(appUser.name || "");
-    }
+    // If appUser is available, set the name for the input field
+    // This ensures the input field is populated with the current user's name
+    // and updates if appUser changes (e.g., after a name update in App.js)
+    setName(appUser.name || "");
 
-    // Always attempt to fetch fresh data from the backend.
-    try {
-      if (!apiBaseUrl) {
-        // This case should ideally be caught before, or App.js should handle global config errors.
-        showAlert("API URL not configured. Cannot fetch profile.", "danger");
-        return;
-      }
+    // No need to fetch user details again here, as App.js is the source of truth.
+    // If appUser is null, the above redirect handles it.
+    // If appUser is present, we use it directly.
+    // The appFetchUserDetails prop is for triggering a refresh of App.js's state
+    // after a successful update from this component.
+  }, [appUser, navigate, showAlert]); // Depend on appUser to re-run when it changes
 
-      const response = await fetch(`${apiBaseUrl}/api/auth/getuser`, {
-        method: "GET",
-        headers: { "auth-token": token },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUserData(data.user); // Update with fresh data from the API
-        setName(data.user.name || ""); // Update name from fresh data
-
-        // If appFetchUserDetails is provided and the fetched user data
-        // differs from appUser, call appFetchUserDetails to update App.js's state.
-        if (appFetchUserDetails && data.user && (!appUser || appUser._id !== data.user._id || appUser.name !== data.user.name)) {
-          appFetchUserDetails();
-        }
-      } else {
-        // API call failed (e.g., 401 Unauthorized, token expired)
-        localStorage.removeItem("token"); // Clear the invalid token
-        showAlert("Session expired or invalid. Please login again.", "danger");
-        navigate("/login"); // Redirect to login page
-      }
-    } catch (error) {
-      console.error("Failed to fetch profile details:", error);
-      // Avoid showing alert if navigation is about to happen due to token removal
-      if (localStorage.getItem("token")) { // Only show if token wasn't just removed
-        showAlert("Could not fetch profile details. Please try again later.", "danger");
-      }
-      // Consider removing token and navigating on critical fetch errors too,
-      // or let App.js handle it if appFetchUserDetails fails.
-    }
-  }, [apiBaseUrl, navigate, showAlert, appUser, appFetchUserDetails]);
-
-  useEffect(() => {
-    fetchProfileDetails();
-  }, [fetchProfileDetails]);
+  // If appUser is null (and we haven't redirected yet), show loading or null
+  if (!appUser) {
+    return <div className="container mt-5 text-center">Loading profile...</div>;
+  }
 
   const handleNameUpdate = async (e) => {
     e.preventDefault();
@@ -114,7 +86,7 @@ const UserProfile = (props) => {
           text: data.message || "Name updated successfully!",
           type: "success",
         });
-        setUserData(data.user); // Update local user data
+        // No local userData state to update, rely on appFetchUserDetails
         if (appFetchUserDetails) appFetchUserDetails(); // Re-fetch user details at App level
       } else {
         setNameMessage({
@@ -198,17 +170,6 @@ const UserProfile = (props) => {
     setLoadingPassword(false);
   };
 
-  // If there's a token, but we don't have userData yet (from the API fetch), show loading.
-  // This allows appUser to provide initial values for controlled inputs like 'name'
-  // without preventing the loading indicator while fresh data is fetched.
-  if (!userData && localStorage.getItem("token")) {
-    return <div className="container mt-5 text-center">Loading profile...</div>;
-  }
-  // If no token and no userData (e.g., navigated away after logout), render nothing or a placeholder.
-  if (!userData && !localStorage.getItem("token")) {
-    return null; // Or a message indicating user is logged out
-  }
-
   return (
     <div className="container mt-5">
       <div className="row justify-content-center">
@@ -219,10 +180,10 @@ const UserProfile = (props) => {
             <div className="card-body">
               <h5 className="card-title">Account Information</h5>
               <p>
-                <strong>Email:</strong> {userData?.email}
+                <strong>Email:</strong> {appUser?.email}
               </p>
               <p>
-                <strong>Joined:</strong> {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString() : 'N/A'}
+                <strong>Joined:</strong> {appUser?.createdAt ? new Date(appUser.createdAt).toLocaleDateString() : 'N/A'}
               </p>
             </div>
           </div>

@@ -46,9 +46,11 @@ function App() {
         });
         if (response.ok) {
           const userData = await response.json();
+          console.log("App.js: Fetched user data from /getuser:", userData); // Debug log
           // Ensure userData.user exists and is a valid object
           if (userData && userData.user && typeof userData.user === "object") {
             setUser(userData.user); // Set the nested user object to the state
+            console.log("App.js: User state updated with:", userData.user); // Debug log
           } else {
             // If response is OK but user data is malformed, treat as invalid session
             localStorage.removeItem("token");
@@ -63,6 +65,7 @@ function App() {
           // Invalid token or other server-side error
           localStorage.removeItem("token");
           setUser(null);
+          console.log("App.js: Invalid token or server error, logging out."); // Debug log
           showAlert(
             "Session expired or invalid. Please login again.",
             "warning"
@@ -73,11 +76,13 @@ function App() {
         console.error("Failed to fetch user details:", error);
         localStorage.removeItem("token"); // Ensure token is removed on fetch error
         setUser(null);
+        console.log("App.js: Fetch user details failed, logging out."); // Debug log
         showAlert("Could not verify session. Please login.", "danger");
         navigate("/login"); // Redirect to login
       }
     } else {
       setUser(null);
+      console.log("App.js: No token found, user is logged out."); // Debug log
       // No token, so user is not logged in.
       // Protected routes will handle their own redirection if accessed directly.
     }
